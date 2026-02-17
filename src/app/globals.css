@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #0b0b0c;
+  --bg-elevated: #121214;
+  --bg-card: #161618;
+  --border: #252528;
+  --border-subtle: #1e1e20;
+  --fg: #f4f4f5;
+  --fg-muted: #a1a1aa;
+  --fg-dim: #71717a;
+  --accent: #0d9488;
+  --accent-hover: #0f766e;
+  --accent-muted: rgba(13, 148, 136, 0.15);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Form inputs: visible text and autofill */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--fg);
+  box-shadow: 0 0 0 1000px var(--bg-card) inset;
+}
+
+.input-dark {
+  @apply block w-full rounded-lg border bg-[var(--bg-card)] px-3.5 py-2.5 text-[length:15px] transition;
+  border-color: var(--border);
+  color: var(--fg);
+}
+.input-dark::placeholder {
+  color: var(--fg-dim);
+}
+.input-dark:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-muted);
+}
+
+/* Select: dropdown arrow shifted slightly left */
+select.input-dark,
+select[class*="rounded-md"][class*="border"],
+select[class*="rounded-lg"][class*="border"] {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 1.75rem;
+}
+select.input-dark {
+  padding-right: 2rem;
+}
+
+/* Date input: make calendar icon visible on dark background */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+/* Cards: subtle, no heavy borders */
+.card-interactive {
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s ease;
+}
+.card-interactive:hover {
+  border-color: var(--border);
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.4);
+  transform: translateY(-1px);
+}
+.card-interactive:active {
+  transform: translateY(0);
+}
+
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+/* Primary button: one clear accent */
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  transition: background 0.2s, transform 0.1s;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+.btn-primary:active {
+  transform: scale(0.98);
+}
+.btn-primary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-muted);
+}
+
+/* App link: clearly clickable */
+a[href] {
+  cursor: pointer;
+  transition: color 0.15s ease, opacity 0.15s ease;
+}
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+/* Focus ring for keyboard users */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+@keyframes slide-up-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shine {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-fade-up {
+  animation: fade-up 0.5s ease-out forwards;
+}
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out forwards;
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+.animate-glow-pulse {
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+.animate-slide-up-in {
+  animation: slide-up-in 0.5s ease-out forwards;
+}
+
+/* Login page: dash color transmit 1 → 2 → 3 → 1 (only one teal at a time) */
+@keyframes dash-glow {
+  0%, 32.9% { background-color: var(--accent); }
+  33%, 100% { background-color: var(--border); }
+}
+.dash-transmit-1 { animation: dash-glow 2.4s ease-in-out infinite; }
+.dash-transmit-2 { animation: dash-glow 2.4s ease-in-out infinite; animation-delay: 0.8s; }
+.dash-transmit-3 { animation: dash-glow 2.4s ease-in-out infinite; animation-delay: 1.6s; }
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .animate-stagger-1 { animation-delay: 0.05s; }
+  .animate-stagger-2 { animation-delay: 0.1s; }
+  .animate-stagger-3 { animation-delay: 0.15s; }
+  .animate-stagger-4 { animation-delay: 0.2s; }
+  .animate-stagger-5 { animation-delay: 0.25s; }
+  .fill-mode-forwards { animation-fill-mode: forwards; }
+}
+
+/* Print: white page so only invoice card shows; no dark background */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
