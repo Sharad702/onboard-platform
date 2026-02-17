@@ -127,6 +127,7 @@ export default async function DashboardPage({
             orgs={orgList}
             currentWorkspaceId={effectiveWorkspaceId ?? null}
             canUsePersonal={!isInvitedOnly}
+            canCreateWorkspace={!isInvitedOnly}
           />
           {effectiveWorkspaceId && membership && (
             <span className="rounded-md bg-[var(--bg-card)] px-2 py-1 text-xs font-medium text-[var(--fg-muted)]">

@@ -5,7 +5,9 @@ import { connectDB } from "@/lib/db";
 import Client from "@/models/Client";
 import Project from "@/models/Project";
 import Invoice from "@/models/Invoice";
+import Organization from "@/models/Organization";
 import OrganizationMember from "@/models/OrganizationMember";
+import User from "@/models/User";
 import { canAccessClient } from "@/lib/auth-helpers";
 import { ArrowLeft } from "lucide-react";
 import InvoicePrintView from "./InvoicePrintView";
@@ -61,6 +63,13 @@ export default async function InvoiceViewPage({
     ? new Date(invoice.dueDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
     : "—";
 
+  const fromName = client.orgId
+    ? (await Organization.findById(client.orgId).select("name").lean())?.name ?? "Workspace"
+    : (await User.findById(session.user.id).select("fullName email").lean())?.fullName?.trim() ||
+      session.user.email ||
+      "—";
+  const fromSubline = client.orgId ? "Invoice for client" : undefined;
+
   return (
     <div className="max-w-2xl print:bg-white print:min-h-screen">
       <ScrollToTop />
@@ -94,6 +103,8 @@ export default async function InvoiceViewPage({
         invoiceNumber={invoiceNum}
         issuedDate={issuedDate}
         dueDate={dueDateStr}
+        fromName={fromName}
+        fromSubline={fromSubline}
         clientName={client.name}
         clientEmail={client.email}
         clientCompany={client.company ?? undefined}

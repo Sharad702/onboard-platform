@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { User, Building2 } from "lucide-react";
 
 const LOGIN_MODE_COOKIE = "loginMode";
@@ -14,28 +14,30 @@ function setLoginModeCookie(mode: "personal" | "workspace") {
   document.cookie = `${LOGIN_MODE_COOKIE}=${mode}; path=/; max-age=${maxAge}; SameSite=Lax`;
 }
 
-function VerifyContent() {
+function ChooseModeContent() {
   const searchParams = useSearchParams();
-  const token = searchParams?.get("token");
   const next = searchParams?.get("next") || "/dashboard";
   const baseNext = next.split("?")[0];
+  const { status: sessionStatus } = useSession();
   const [status, setStatus] = useState<"loading" | "choose" | "addWorkspace" | "success" | "error">("loading");
   const [workspaceName, setWorkspaceName] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState("");
 
   useEffect(() => {
-    if (!token) {
+    if (sessionStatus === "unauthenticated") {
       setStatus("error");
       return;
     }
-    signIn("magic-link", { token, redirect: false })
-      .then((res) => {
-        if (res?.ok) setStatus("choose");
-        else setStatus("error");
-      })
-      .catch(() => setStatus("error"));
-  }, [token]);
+    if (sessionStatus === "authenticated") {
+      const hasMode = typeof document !== "undefined" && document.cookie.includes(`${LOGIN_MODE_COOKIE}=`);
+      if (hasMode) {
+        window.location.href = next;
+        return;
+      }
+      setStatus("choose");
+    }
+  }, [sessionStatus, next]);
 
   function goPersonal() {
     setLoginModeCookie("personal");
@@ -74,7 +76,7 @@ function VerifyContent() {
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-app">
       <div className="w-full max-w-sm rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-6 text-center">
-        {status === "loading" && <p className="text-[var(--fg-muted)]">Signing you in…</p>}
+        {status === "loading" && <p className="text-[var(--fg-muted)]">Loading…</p>}
         {status === "choose" && (
           <>
             <p className="text-[var(--fg)] mb-1">You’re signed in.</p>
@@ -136,7 +138,7 @@ function VerifyContent() {
         {status === "success" && <p className="text-[var(--accent)]">Redirecting…</p>}
         {status === "error" && (
           <>
-            <p className="text-red-400">Invalid or expired link. Request a new one.</p>
+            <p className="text-red-400">Please sign in first.</p>
             <Link href="/login" className="mt-4 inline-block text-[var(--accent)] hover:underline">Back to login</Link>
           </>
         )}
@@ -145,10 +147,10 @@ function VerifyContent() {
   );
 }
 
-export default function VerifyMagicLinkPage() {
+export default function ChooseModePage() {
   return (
     <Suspense fallback={<main className="min-h-screen flex items-center justify-center p-6 bg-[var(--bg)]"><div className="text-[var(--fg-dim)]">Loading…</div></main>}>
-      <VerifyContent />
+      <ChooseModeContent />
     </Suspense>
   );
 }

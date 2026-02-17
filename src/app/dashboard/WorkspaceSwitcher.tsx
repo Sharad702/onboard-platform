@@ -8,10 +8,13 @@ export default function WorkspaceSwitcher({
   orgs,
   currentWorkspaceId,
   canUsePersonal = true,
+  canCreateWorkspace = true,
 }: {
   orgs: Org[];
   currentWorkspaceId: string | null;
   canUsePersonal?: boolean;
+  /** false for invited-only members (no owner/admin in any workspace) */
+  canCreateWorkspace?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -20,7 +23,13 @@ export default function WorkspaceSwitcher({
   const COOKIE_NAME = "dashboard_workspace";
   const value = currentWorkspaceId ?? (canUsePersonal ? "personal" : orgs[0]?.id ?? "personal");
 
+  const ADD_NEW = "__new__";
+
   function switchTo(orgId: string | null) {
+    if (orgId === ADD_NEW) {
+      router.push("/dashboard/workspace/new");
+      return;
+    }
     if (orgId) {
       document.cookie = `${COOKIE_NAME}=${orgId}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Lax`;
     } else {
@@ -45,6 +54,7 @@ export default function WorkspaceSwitcher({
         {orgs.map((o) => (
           <option key={o.id} value={o.id}>{o.name}</option>
         ))}
+        {canCreateWorkspace && <option value={ADD_NEW}>+ New workspace</option>}
       </select>
     </div>
   );

@@ -40,7 +40,7 @@ function LoginContent() {
 
           <button
             type="button"
-            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
+            onClick={() => signIn("google", { callbackUrl: "/login/verify?next=/dashboard" })}
             className="btn-press w-full flex items-center justify-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] py-3.5 px-4 text-[var(--fg)] font-medium hover:bg-[var(--bg-elevated)] hover:border-[var(--border)] transition"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">

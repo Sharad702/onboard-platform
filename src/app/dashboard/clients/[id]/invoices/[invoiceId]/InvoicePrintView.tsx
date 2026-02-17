@@ -2,6 +2,8 @@ export default function InvoicePrintView({
   invoiceNumber,
   issuedDate,
   dueDate,
+  fromName,
+  fromSubline,
   clientName,
   clientEmail,
   clientCompany,
@@ -12,6 +14,8 @@ export default function InvoicePrintView({
   invoiceNumber: string;
   issuedDate: string;
   dueDate: string;
+  fromName: string;
+  fromSubline?: string;
   clientName: string;
   clientEmail: string;
   clientCompany?: string;
@@ -44,8 +48,8 @@ export default function InvoicePrintView({
         <div className="grid gap-8 sm:grid-cols-2 mb-8">
           <div>
             <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-2">From</p>
-            <p className="font-bold text-zinc-900 text-lg">OnboardEasy</p>
-            <p className="text-sm text-zinc-600">Invoice for client</p>
+            <p className="font-bold text-zinc-900 text-lg">{fromName}</p>
+            {fromSubline ? <p className="text-sm text-zinc-600">{fromSubline}</p> : null}
           </div>
           <div className="sm:text-right">
             <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-2">Bill to</p>

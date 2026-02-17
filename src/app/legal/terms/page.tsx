@@ -17,7 +17,7 @@ export default function TermsPage() {
 
         <h2 className="text-lg font-medium text-[var(--fg)]">3. Account and security</h2>
         <p>
-          You are responsible for keeping your account credentials and magic-link emails secure. Notify us if you suspect unauthorized access.
+          You are responsible for keeping your account credentials secure. Notify us if you suspect unauthorized access.
         </p>
 
         <h2 className="text-lg font-medium text-[var(--fg)]">4. Subscription and payment</h2>

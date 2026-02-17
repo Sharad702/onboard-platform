@@ -4,7 +4,6 @@ import Credentials from "next-auth/providers/credentials";
 import { getServerSession } from "next-auth";
 import { connectDB } from "./db";
 import User from "@/models/User";
-import MagicLinkToken from "@/models/MagicLinkToken";
 import OrganizationInvite from "@/models/OrganizationInvite";
 import OrganizationMember from "@/models/OrganizationMember";
 
@@ -13,24 +12,6 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
-    }),
-    Credentials({
-      id: "magic-link",
-      name: "Magic Link",
-      credentials: { token: { label: "Token", type: "text" } },
-      async authorize(credentials) {
-        const token = credentials?.token as string | undefined;
-        if (!token) return null;
-        await connectDB();
-        const row = await MagicLinkToken.findOne({ token, expiresAt: { $gt: new Date() } });
-        if (!row) return null;
-        let user = await User.findOne({ email: row.email.toLowerCase() });
-        if (!user) {
-          user = await User.create({ email: row.email.toLowerCase() });
-        }
-        await MagicLinkToken.deleteOne({ _id: row._id });
-        return { id: user._id.toString(), email: user.email };
-      },
     }),
     Credentials({
       id: "invite",
