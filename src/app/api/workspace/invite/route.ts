@@ -26,7 +26,12 @@ export async function POST(request: Request) {
     createdBy: session.user.id,
   });
 
-  const base = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const host = request.headers.get("host");
+  const protocol = request.headers.get("x-forwarded-proto") ?? (request.headers.get("x-forwarded-ssl") === "on" ? "https" : "http");
+  const base =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXTAUTH_URL ||
+    (host ? `${protocol}://${host}` : "http://localhost:3000");
   const link = `${base}/invite?token=${token}`;
   return NextResponse.json({ ok: true, link });
 }
