@@ -9,10 +9,17 @@ const clientSchema = new mongoose.Schema(
     email: { type: String, required: true },
     company: String,
     phone: String,
+    /** Telegram username (without @) for tracking which client is which. */
+    telegramUsername: String,
     gstin: String,
     address: String,
     notes: String,
     onboardedAt: { type: Date, default: null },
+    /** Telegram chat_id (set when client opens their unique Telegram link). */
+    telegramChatId: { type: String, default: null },
+    /** One-time token for "Get Telegram link" (client opens link → we link chatId). */
+    telegramLinkToken: { type: String, default: null },
+    telegramLinkTokenExpiresAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

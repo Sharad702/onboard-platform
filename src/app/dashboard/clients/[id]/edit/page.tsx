@@ -35,6 +35,7 @@ export default async function EditClientPage({
     email: client.email,
     company: client.company ?? null,
     phone: client.phone ?? null,
+    telegramUsername: (client as { telegramUsername?: string | null }).telegramUsername ?? null,
     gstin: client.gstin ?? null,
     address: client.address ?? null,
     notes: client.notes ?? null,

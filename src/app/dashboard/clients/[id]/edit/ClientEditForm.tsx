@@ -10,6 +10,7 @@ type Client = {
   email: string;
   company: string | null;
   phone: string | null;
+  telegramUsername: string | null;
   gstin: string | null;
   address: string | null;
   notes: string | null;
@@ -24,6 +25,7 @@ export default function ClientEditForm({ client }: { client: Client }) {
     email: client.email,
     company: client.company ?? "",
     phone: client.phone ?? "",
+    telegramUsername: client.telegramUsername ?? "",
     gstin: client.gstin ?? "",
     address: client.address ?? "",
     notes: client.notes ?? "",
@@ -41,6 +43,7 @@ export default function ClientEditForm({ client }: { client: Client }) {
         email: form.email,
         company: form.company || null,
         phone: form.phone || null,
+        telegramUsername: form.telegramUsername || null,
         gstin: form.gstin || null,
         address: form.address || null,
         notes: form.notes || null,
@@ -98,6 +101,16 @@ export default function ClientEditForm({ client }: { client: Client }) {
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
             className="input-dark mt-1 w-full"
+          />
+        </label>
+        <label className="block">
+          <span className="text-sm font-medium text-[var(--fg-dim)]">Telegram</span>
+          <input
+            type="text"
+            value={form.telegramUsername}
+            onChange={(e) => setForm((f) => ({ ...f, telegramUsername: e.target.value }))}
+            className="input-dark mt-1 w-full"
+            placeholder="username or @username"
           />
         </label>
         <label className="block">

@@ -9,8 +9,9 @@ export async function POST(request: Request) {
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
-  const { name, email, company, phone, gstin, address, notes, workspaceId } = body;
+  const { name, email, company, phone, telegramUsername, gstin, address, notes, workspaceId } = body;
   if (!name || !email) return NextResponse.json({ error: "Name and email required" }, { status: 400 });
+  const telegram = typeof telegramUsername === "string" ? telegramUsername.replace(/^@/, "").trim() || undefined : undefined;
 
   await connectDB();
   const userId = session.user.id;
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
     email: email.trim().toLowerCase(),
     company: company?.trim() || undefined,
     phone: phone?.trim() || undefined,
+    telegramUsername: telegram,
     gstin: gstin?.trim() || undefined,
     address: address?.trim() || undefined,
     notes: notes?.trim() || undefined,

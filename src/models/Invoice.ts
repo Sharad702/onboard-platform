@@ -10,6 +10,8 @@ const invoiceSchema = new mongoose.Schema(
     status: { type: String, default: "pending", enum: ["pending", "paid", "draft", "sent", "partially_paid", "cancelled"] },
     dueDate: Date,
     paidAt: Date,
+    /** When invoice is added by uploading a photo (e.g. from client/vendor) */
+    imagePath: { type: String },
   },
   { timestamps: true }
 );

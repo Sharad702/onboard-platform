@@ -9,6 +9,10 @@ import { ArrowLeft } from "lucide-react";
 import DeleteWorkspaceButton from "./DeleteWorkspaceButton";
 import InviteForm from "./InviteForm";
 import MemberRoleSelect from "./MemberRoleSelect";
+import TelegramBotForm from "./TelegramBotForm";
+import ConnectTelegramButton from "./ConnectTelegramButton";
+
+export const dynamic = "force-dynamic";
 
 export default async function WorkspacePage({
   params,
@@ -20,7 +24,7 @@ export default async function WorkspacePage({
   if (!session?.user?.id) return null;
 
   await connectDB();
-  const org = await Organization.findById(orgId).lean();
+  const org = await Organization.findById(orgId).select("name telegramBotUsername telegramClientBotUsername").lean();
   if (!org) notFound();
 
   const membership = await OrganizationMember.findOne({ orgId, userId: session.user.id }).select("role").lean();
@@ -51,7 +55,25 @@ export default async function WorkspacePage({
             <p className="text-sm text-[var(--fg-dim)] mb-4">Send the invite link to their email. They sign in and join this workspace.</p>
             <InviteForm orgId={orgId} />
           </div>
+          <div className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5">
+            <h2 className="font-semibold text-[var(--fg)] mb-2">Team bot</h2>
+            <p className="text-sm text-[var(--fg-dim)] mb-4">One bot for all team members. Add token below. Send the &quot;Connect Telegram&quot; link (from below) to each team member—they open it and tap Start to get notifications.</p>
+            <TelegramBotForm orgId={orgId} botUsername={org.telegramBotUsername ?? null} tokenKey="telegramBotToken" />
+          </div>
+          <div className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5">
+            <h2 className="font-semibold text-[var(--fg)] mb-2">Client bot</h2>
+            <p className="text-sm text-[var(--fg-dim)] mb-4">One bot for all clients. Add token below. From each client page, get that client’s link and send it to them—they open it, tap Start, then can send tasks.</p>
+            <TelegramBotForm orgId={orgId} botUsername={org.telegramClientBotUsername ?? null} tokenKey="telegramClientBotToken" />
+          </div>
         </>
+      )}
+
+      {org.telegramBotUsername && (
+        <div className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5">
+          <h2 className="font-semibold text-[var(--fg)] mb-2">Telegram notifications</h2>
+          <p className="text-sm text-[var(--fg-dim)] mb-4">Get notified in Telegram when a new project is added for a client assigned to you.</p>
+          <ConnectTelegramButton orgId={orgId} />
+        </div>
       )}
 
       <div className="mt-6 rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-5">

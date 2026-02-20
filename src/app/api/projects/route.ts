@@ -25,6 +25,7 @@ export async function POST(request: Request) {
     name: name.trim(),
     valueInr: valueInr != null ? Number(valueInr) : undefined,
     startDate: startDate || undefined,
+    receivedVia: "manual",
   });
   return NextResponse.json({ id: project._id.toString() });
 }

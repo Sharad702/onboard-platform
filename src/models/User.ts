@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema(
     gstin: String,
     plan: { type: String, default: "free", enum: ["free", "basic", "pro", "agency"] },
     clientLimit: { type: Number, default: 3 },
+    /** Telegram chat_id for notifications (e.g. new project added for assigned client). */
+    telegramChatId: { type: String, default: null },
+    /** One-time token for "Connect Telegram" link (expires in ~15 min). */
+    telegramLinkToken: { type: String, default: null },
+    telegramLinkTokenExpiresAt: { type: Date, default: null },
   },
   { timestamps: true }
 );

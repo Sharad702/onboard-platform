@@ -119,6 +119,8 @@ supabase/
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY` (for client portal token lookup)
+   - **Telegram (optional):** For workspace Telegram bot, set `NEXT_PUBLIC_APP_URL` to your public app URL (e.g. `https://yourapp.vercel.app`). On Vercel, `VERCEL_URL` is set automatically.
+   - **Telegram local (no ngrok):** Run `npm run telegram:poll` in a separate terminal to receive bot updates locally. Add the bot in workspace settings first, then send `/start` to the bot on Telegram.
 
 4. **Run**
    ```bash

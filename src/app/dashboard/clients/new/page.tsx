@@ -16,6 +16,7 @@ export default function NewClientPage() {
     email: "",
     company: "",
     phone: "",
+    telegramUsername: "",
     gstin: "",
     address: "",
     notes: "",
@@ -98,6 +99,16 @@ export default function NewClientPage() {
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
               className="input-dark mt-1 w-full"
               placeholder="+91 98765 43210"
+            />
+          </label>
+          <label className="block">
+            <span className="text-sm font-medium text-zinc-400">Telegram</span>
+            <input
+              type="text"
+              value={form.telegramUsername}
+              onChange={(e) => setForm((f) => ({ ...f, telegramUsername: e.target.value }))}
+              className="input-dark mt-1 w-full"
+              placeholder="username or @username"
             />
           </label>
           <label className="block">

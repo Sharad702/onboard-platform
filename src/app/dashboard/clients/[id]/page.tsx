@@ -14,6 +14,7 @@ import DeleteClientButton from "./DeleteClientButton";
 import DeleteInvoiceButton from "./DeleteInvoiceButton";
 import DeleteProjectButton from "@/app/dashboard/clients/[id]/projects/[projectId]/DeleteProjectButton";
 import ExportProjectsButton from "./ExportProjectsButton";
+import GetTelegramLinkButton from "./GetTelegramLinkButton";
 import MarkOnboardingCompleteButton from "./MarkOnboardingCompleteButton";
 
 export const dynamic = "force-dynamic";
@@ -60,7 +61,7 @@ export default async function ClientDetailPage({
   }
 
   const projects = await Project.find({ clientId: id })
-    .select("_id name status valueInr startDate")
+    .select("_id name status valueInr currency startDate")
     .sort({ createdAt: -1 })
     .lean();
 
@@ -116,15 +117,23 @@ export default async function ClientDetailPage({
           <h1 className="text-xl font-semibold text-[var(--fg)]">{client.name}</h1>
           <p className="text-[var(--fg-muted)]">{client.email}</p>
           {client.company && <p className="mt-1 text-sm text-[var(--fg-dim)]">{client.company}</p>}
+          {(client as { telegramUsername?: string | null }).telegramUsername && (
+            <p className="mt-1 text-sm text-[var(--fg-dim)]">
+              Telegram:{" "}
+              <a
+                href={`https://t.me/${(client as { telegramUsername: string }).telegramUsername}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--accent)] hover:underline"
+              >
+                @{(client as { telegramUsername: string }).telegramUsername}
+              </a>
+            </p>
+          )}
           <div className="mt-5 flex flex-wrap items-center gap-3">
             {!isOnboarded && <MarkOnboardingCompleteButton clientId={clientIdStr} />}
-            {isOnboarded && !(projects?.length) && (
-              <Link
-                href={`/dashboard/clients/${clientIdStr}/projects/new`}
-                className="rounded-xl border border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2.5 text-sm font-medium text-[var(--fg)] transition hover:bg-[var(--bg-card)] hover:border-[var(--accent)]/30 focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
-              >
-                Create project
-              </Link>
+            {orgIdStr && currentUserRole !== "member" && (
+              <GetTelegramLinkButton clientId={clientIdStr} />
             )}
             {currentUserRole !== "member" && (
               <>
@@ -206,7 +215,7 @@ export default async function ClientDetailPage({
                     >
                       <p className="font-medium text-[var(--fg)]">{p.name}</p>
                       <p className="text-sm text-[var(--fg-dim)]">
-                        {p.status.replace("_", " ")} · {p.valueInr != null ? `₹${Number(p.valueInr).toLocaleString("en-IN")}` : "—"}
+                        {p.status.replace("_", " ")} · {p.valueInr != null ? `${(p as { currency?: string }).currency === "USD" ? "$" : "₹"}${Number(p.valueInr).toLocaleString("en-IN")}` : "—"}
                       </p>
                     </Link>
                     <div className="shrink-0">

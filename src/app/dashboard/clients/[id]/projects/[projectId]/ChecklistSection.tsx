@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ClipboardList, Plus, Check, Circle } from "lucide-react";
 
-type Item = { title: string; done?: boolean };
+type Item = { title: string; done?: boolean; value?: string };
 export default function ChecklistSection({
   projectId,
   checklist,
@@ -81,8 +81,13 @@ export default function ChecklistSection({
               ) : (
                 <Circle className="h-5 w-5 shrink-0 text-zinc-500" />
               )}
-              <span className={item.done ? "text-zinc-500 line-through" : "text-zinc-200"}>
-                {item.title}
+              <span className="flex flex-col gap-0.5">
+                <span className={item.done ? "text-zinc-500 line-through" : "text-zinc-200"}>
+                  {item.title}
+                </span>
+                {item.value != null && item.value !== "" && (
+                  <span className="text-sm text-zinc-400">{item.value}</span>
+                )}
               </span>
             </button>
             <button

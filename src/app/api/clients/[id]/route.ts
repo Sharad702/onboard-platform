@@ -58,13 +58,16 @@ export async function PATCH(
   if (!(await canEditOrDeleteClient(session.user.id, client))) return NextResponse.json({ error: "Only owner or admin can edit client" }, { status: 403 });
 
   const body = await request.json();
-  const allowed = ["name", "email", "company", "phone", "gstin", "address", "notes", "assignedTo", "onboardedAt"];
+  const allowed = ["name", "email", "company", "phone", "telegramUsername", "gstin", "address", "notes", "assignedTo", "onboardedAt"];
   for (const key of allowed) {
     if (body[key] !== undefined) {
       if (key === "assignedTo") {
         client.assignedTo = body[key] === "" || body[key] == null ? undefined : body[key];
       } else if (key === "onboardedAt") {
         client.onboardedAt = body[key] ? new Date() : undefined;
+      } else if (key === "telegramUsername") {
+        const raw = body[key] === "" || body[key] == null ? "" : String(body[key]);
+        client.telegramUsername = raw.replace(/^@/, "").trim() || undefined;
       } else {
         (client as Record<string, unknown>)[key] = body[key] === "" ? null : body[key];
       }

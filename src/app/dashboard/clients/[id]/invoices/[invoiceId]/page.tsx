@@ -112,6 +112,26 @@ export default async function InvoiceViewPage({
         amountInr={Number(invoice.amountInr)}
         status={invoice.status}
       />
+
+      {invoice.imagePath && (
+        <section className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900/80 p-4 print:break-before-page">
+          <h2 className="text-sm font-medium text-zinc-400 mb-3">Uploaded invoice image</h2>
+          <a
+            href={invoice.imagePath}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800 max-w-lg"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={invoice.imagePath}
+              alt="Uploaded invoice"
+              className="w-full h-auto max-h-[70vh] object-contain"
+            />
+          </a>
+          <p className="mt-2 text-xs text-zinc-500">Click to open full size in a new tab.</p>
+        </section>
+      )}
     </div>
   );
 }

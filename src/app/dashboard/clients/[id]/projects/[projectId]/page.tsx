@@ -35,9 +35,14 @@ export default async function ProjectDetailPage({
     .sort({ orderIndex: 1 })
     .lean();
 
-  const completed = milestones?.filter((m) => m.completedAt).length ?? 0;
-  const total = milestones?.length ?? 0;
-  const progress = total ? Math.round((completed / total) * 100) : 0;
+  const statusProgress: Record<string, number> = {
+    completed: 100,
+    active: 50,
+    on_hold: 25,
+    cancelled: 0,
+  };
+  const progress = statusProgress[project.status] ?? 50;
+  const receivedVia = (project as { receivedVia?: string | null }).receivedVia;
 
   const clientIdStr = client._id.toString();
   const projectIdStr = project._id.toString();
@@ -51,10 +56,17 @@ export default async function ProjectDetailPage({
 
       <div className="mb-6 animate-slide-up rounded-2xl border border-zinc-800 bg-zinc-900/80 p-6 shadow-lg">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h1 className="text-2xl font-semibold text-zinc-100">{project.name}</h1>
+          <div className="flex items-center gap-2 min-w-0">
+            <h1 className="text-2xl font-semibold text-zinc-100 truncate">{project.name}</h1>
+            {receivedVia && (
+              <span className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-medium uppercase tracking-wide ${receivedVia === "telegram" ? "bg-sky-500/20 text-sky-300" : "bg-zinc-600/50 text-zinc-400"}`}>
+                {receivedVia === "telegram" ? "Telegram" : "Manual"}
+              </span>
+            )}
+          </div>
           {project.valueInr != null && (
-            <p className="text-lg font-medium text-zinc-100">
-              ₹{Number(project.valueInr).toLocaleString("en-IN")}
+            <p className="text-lg font-medium text-zinc-100 shrink-0">
+              {(project.currency === "USD" ? "$" : "₹")}{Number(project.valueInr).toLocaleString("en-IN")}
             </p>
           )}
         </div>
@@ -67,6 +79,12 @@ export default async function ProjectDetailPage({
               ? `Status changed on ${new Date(project.statusChangedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`
               : `Last updated on ${new Date(project.updatedAt!).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`}
           </p>
+        )}
+        {project.description && (
+          <div className="mt-3 rounded-lg border border-zinc-700/60 bg-zinc-800/50 p-3">
+            <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide mb-1">What client sent</p>
+            <p className="text-sm text-zinc-300 whitespace-pre-wrap">{project.description}</p>
+          </div>
         )}
         <div className="mt-4">
           <div className="flex justify-between text-sm text-zinc-500 mb-1">

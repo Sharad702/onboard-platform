@@ -12,6 +12,7 @@ import ClientCard from "./ClientCard";
 import UseWorkspacesLink from "./UseWorkspacesLink";
 import WorkspaceSwitcher from "./WorkspaceSwitcher";
 import SetWorkspaceCookie from "./SetWorkspaceCookie";
+import AddTelegramButton from "./AddTelegramButton";
 
 const DASHBOARD_WORKSPACE_COOKIE = "dashboard_workspace";
 
@@ -29,12 +30,6 @@ export default async function DashboardPage({
   const showWorkspaceBar = loginMode === "workspace";
   const effectiveWorkspaceId = showWorkspaceBar ? workspaceId : undefined;
 
-  // Redirect to last workspace when opening /dashboard without ?workspace (cookie is set on client)
-  if (!effectiveWorkspaceId && showWorkspaceBar) {
-    const saved = cookieStore.get(DASHBOARD_WORKSPACE_COOKIE)?.value;
-    if (saved) redirect(`/dashboard?workspace=${saved}`);
-  }
-
   await connectDB();
   const userId = session.user.id;
 
@@ -50,6 +45,14 @@ export default async function DashboardPage({
           name: o.name,
         }))
       : [];
+
+  // Redirect to last workspace only if user is still a member of it (so new users with no workspace see personal + Add client)
+  if (!effectiveWorkspaceId && showWorkspaceBar) {
+    const saved = cookieStore.get(DASHBOARD_WORKSPACE_COOKIE)?.value;
+    if (saved && memberships.some((m) => m.orgId.toString() === saved)) {
+      redirect(`/dashboard?workspace=${saved}`);
+    }
+  }
 
   if (isInvitedOnly && !effectiveWorkspaceId && orgList.length > 0) {
     redirect(`/dashboard?workspace=${orgList[0].id}`);
@@ -93,6 +96,21 @@ export default async function DashboardPage({
     (membership && ["owner", "admin"].includes(membership.role));
   const addClientHref = effectiveWorkspaceId ? `/dashboard/clients/new?workspace=${effectiveWorkspaceId}` : "/dashboard/clients/new";
 
+  let currentUserTelegramChatId: string | null = null;
+  let workspaceHasTeamBot = false;
+  if (effectiveWorkspaceId && membership?.role === "member") {
+    const [user, org] = await Promise.all([
+      User.findById(userId).select("telegramChatId").lean(),
+      Organization.findById(effectiveWorkspaceId).select("telegramBotUsername").lean(),
+    ]);
+    currentUserTelegramChatId = (user as { telegramChatId?: string | null } | null)?.telegramChatId ?? null;
+    workspaceHasTeamBot = !!(org as { telegramBotUsername?: string | null } | null)?.telegramBotUsername;
+  }
+  const showTelegramBlock =
+    effectiveWorkspaceId &&
+    membership?.role === "member" &&
+    workspaceHasTeamBot;
+
   const clientsSubtitle =
     !effectiveWorkspaceId || !membership
       ? "Manage and onboard your clients"
@@ -133,6 +151,9 @@ export default async function DashboardPage({
             <span className="rounded-md bg-[var(--bg-card)] px-2 py-1 text-xs font-medium text-[var(--fg-muted)]">
               {["owner", "admin"].includes(membership.role) ? "All clients" : "Assigned to you"}
             </span>
+          )}
+          {showTelegramBlock && (
+            <AddTelegramButton orgId={effectiveWorkspaceId!} linked={!!currentUserTelegramChatId} />
           )}
           {effectiveWorkspaceId && membership && ["owner", "admin"].includes(membership.role) ? (
             <Link
